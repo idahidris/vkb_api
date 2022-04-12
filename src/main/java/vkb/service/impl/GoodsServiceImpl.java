@@ -3,11 +3,17 @@ package vkb.service.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiError;
 import vkb.controller.common.AppApiErrors;
 import vkb.controller.common.AppApiResponse;
 import vkb.dto.GoodsRequestDto;
+import vkb.dto.PageDto;
 import vkb.entity.Goods;
 import vkb.repository.GoodsRepository;
 import vkb.service.GoodsService;
@@ -21,9 +27,11 @@ import java.util.List;
 public class GoodsServiceImpl implements GoodsService {
 
     private final GoodsRepository goodsRepository;
+    private final ApiResponseUtil apiResponseUtil;
 
-    public GoodsServiceImpl(GoodsRepository goodsRepository) {
+    public GoodsServiceImpl(GoodsRepository goodsRepository, ApiResponseUtil apiResponseUtil) {
         this.goodsRepository = goodsRepository;
+        this.apiResponseUtil = apiResponseUtil;
 
     }
 
@@ -75,6 +83,17 @@ public class GoodsServiceImpl implements GoodsService {
 
         }
         return appApiResponse;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AppApiResponse fetchAll(PageDto pageDto) {
+        Pageable pageable = PageRequest.of(Integer.parseInt(pageDto.getPageNumber()), Integer.parseInt(pageDto.getPageSize()));
+        String searchValue = pageDto.getSearchValue();
+        if(searchValue==null || searchValue.trim().isEmpty())
+            return apiResponseUtil.entityPagedList(goodsRepository.findAll(pageable), pageable);
+        else
+            return apiResponseUtil.entityPagedList(goodsRepository.findAllByIdLike("%"+pageDto.getSearchValue()+"%", pageable), pageable);
     }
 
     public boolean exists(Goods goods){

@@ -217,13 +217,11 @@ public class ApiResponseUtil {
      * @param collection
      * @return
      */
-    public AppApiResponse entityPagedList(Page<?> collection) {
+    public AppApiResponse entityPagedList(Page<?> collection,Pageable pageable ) {
 
         AppApiResponse apiResponse = arrangeInitialResponse();
         if (!collection.hasContent()) {
             arrangeSuccessResponse(apiResponse);
-            Pageable pageable = PageRequest.of(new PageDto().getPageNumber(), new PageDto().getPageSize(), Sort.by(
-                    Sort.Order.desc("terminal")));
             ResponseEntity<?> responseEntity = new ResponseEntity<>(new PageImpl<>(new ArrayList<>(), pageable, 0), HttpStatus.valueOf(OK.value()));
             apiResponse.setResponseBody(responseEntity);
         } else {

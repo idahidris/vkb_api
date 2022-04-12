@@ -5,10 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiResponse;
 import vkb.dto.GoodsRequestDto;
+import vkb.dto.PageDto;
+import vkb.entity.Goods;
 import vkb.service.GoodsService;
 
 import javax.validation.Valid;
@@ -23,6 +26,7 @@ public class GoodsController extends ApiController {
 
     private final GoodsService goodsService;
     private final ApiResponseUtil apiResponseUtil;
+    ObjectMapper objectMapper = new ObjectMapper();
 
 
     public GoodsController(GoodsService goodsService,
@@ -32,21 +36,25 @@ public class GoodsController extends ApiController {
         this.apiResponseUtil = apiResponseUtil;
     }
 
-//    /**
-//     * api to get terminals and return terminals
-//     *
-//     * @param pageDto
-//     * @return
-//     */
-//    @Operation(summary = "Get all terminals with pagination")
-//    @GetMapping(value = TERMINALS)
-//    public AppApiResponse getTerminal(PageDto pageDto) {
-//
-//        log.info("************************** start get all terminal api **************************");
-//        Page<PosTerminalAggregateViewDto> terminalAggregates = terminalOperationService.retrieveAllTerminalUpload(pageDto);
-//        log.info("********************* finished executing get all terminal api *************************");
-//        return apiResponseUtil.entityPagedList(terminalAggregates);
-//    }
+    /**
+     * api to get goods and return goods
+     *
+     * @param pageDto
+     * @return
+     */
+    @Operation(summary = "Get all goods with pagination")
+    @GetMapping(value = GOODS)
+    public AppApiResponse getGoods(@Valid @RequestBody PageDto pageDto) throws JsonProcessingException {
+
+
+        log.info("************************** start get all terminal api **************************");
+        log.info("REQUEST==>"+objectMapper.writeValueAsString(pageDto));
+        AppApiResponse appApiResponse = goodsService.fetchAll(pageDto);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(appApiResponse));
+        log.info("********************* finished executing get all terminal api *************************");
+
+       return appApiResponse;
+    }
 
 //
 //    /**
@@ -75,7 +83,7 @@ public class GoodsController extends ApiController {
     @PostMapping(value = GOODS)
     public AppApiResponse createGoods(@Valid @RequestBody GoodsRequestDto goodsRequestDto) throws JsonProcessingException {
         log.info("************************** start create goods api **************************");
-        ObjectMapper objectMapper = new ObjectMapper();
+
         log.info("REQUEST==>"+objectMapper.writeValueAsString(goodsRequestDto));
         AppApiResponse appApiResponse
                 = goodsService.register(goodsRequestDto);
