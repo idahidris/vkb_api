@@ -5,13 +5,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiResponse;
 import vkb.dto.GoodsRequestDto;
 import vkb.dto.PageDto;
-import vkb.entity.Goods;
 import vkb.service.GoodsService;
 
 import javax.validation.Valid;
@@ -54,6 +52,19 @@ public class GoodsController extends ApiController {
         log.info("********************* finished executing get all terminal api *************************");
 
        return appApiResponse;
+    }
+    @Operation(summary = "Get all goods with pagination")
+    @GetMapping(value = GOODS+"/{goodsId}")
+    public AppApiResponse getGoodsById(@Valid @PathVariable String goodsId) throws JsonProcessingException {
+
+
+        log.info("************************** start get all terminal api **************************");
+        log.info("Path Variable==>"+goodsId);
+        AppApiResponse appApiResponse = goodsService.findById(goodsId);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(appApiResponse));
+        log.info("********************* finished executing get all terminal api *************************");
+
+        return appApiResponse;
     }
 
 //

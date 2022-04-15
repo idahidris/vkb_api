@@ -12,4 +12,5 @@ public interface GoodsService {
 
     @Transactional(readOnly = true)
     AppApiResponse fetchAll(PageDto pageDto);
+    AppApiResponse findById(String id);
 }

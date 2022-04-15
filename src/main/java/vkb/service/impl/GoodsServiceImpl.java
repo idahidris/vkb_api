@@ -1,11 +1,9 @@
 package vkb.service.impl;
 
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vkb.controller.common.ApiResponseUtil;
@@ -94,6 +92,13 @@ public class GoodsServiceImpl implements GoodsService {
             return apiResponseUtil.entityPagedList(goodsRepository.findAll(pageable), pageable);
         else
             return apiResponseUtil.entityPagedList(goodsRepository.findAllByIdLike("%"+pageDto.getSearchValue()+"%", pageable), pageable);
+    }
+
+    @Override
+    public AppApiResponse findById(String id) {
+        Pageable pageable = PageRequest.of(0, 1);
+        return apiResponseUtil.entityPagedList(goodsRepository.findAllByIdLike(id, pageable), pageable);
+
     }
 
     public boolean exists(Goods goods){
