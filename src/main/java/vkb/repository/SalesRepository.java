@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import vkb.entity.MonthlyIncome;
+import vkb.entity.Report;
 import vkb.entity.Sales;
 
 import java.util.List;
@@ -22,8 +22,8 @@ public interface SalesRepository extends JpaRepository<Sales, String>{
 
     @Modifying
     @Transactional(readOnly = true)
-    @Query(nativeQuery = true, value = "SELECT FORMAT(s.sales_date,'MM') as month, SUM(s.total_price) as total from sales s WHERE s.sales_date>=?1 AND s.sales_date<=?2 GROUP BY FORMAT(s.sales_date,'MM') ORDER BY FORMAT(s.sales_date,'MM') ASC ")
-    List<MonthlyIncome> fetchMonthEarnings(String dateStart, String dateEnd);
+    @Query(nativeQuery = true, value = "SELECT FORMAT(s.sales_date,'MM') as factor, SUM(s.total_price) as measure from sales s WHERE s.sales_date>=?1 AND s.sales_date<=?2 GROUP BY FORMAT(s.sales_date,'MM') ORDER BY FORMAT(s.sales_date,'MM') ASC ")
+    List<Report> fetchMonthEarnings(String dateStart, String dateEnd);
 
 
 

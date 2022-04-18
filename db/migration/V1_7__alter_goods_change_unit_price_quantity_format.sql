@@ -1,0 +1,10 @@
+
+ALTER TABLE GOODS
+ALTER COLUMN unit_price numeric(19,2)  NOT NULL
+
+GO
+
+ALTER TABLE GOODS
+ALTER COLUMN quantity numeric(19,2)  NOT NULL
+
+GO

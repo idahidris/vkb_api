@@ -89,7 +89,7 @@ public class CartServiceImpl implements CartService {
 
                 int balance = qty - prevQty;
 
-                int newGoodsBalance = Integer.parseInt(goods.getQuantity() ) - balance;
+                int newGoodsBalance = goods.getQuantity()  - balance;
 
                 if(newGoodsBalance<0){
                     AppApiError appApiError = new AppApiError("03", " require more "+ Math.abs(newGoodsBalance)+ " item, to meet up with your request:"+ qty);
@@ -117,7 +117,7 @@ public class CartServiceImpl implements CartService {
                 appApiResponse.setApiErrors(appApiErrors);
                 appApiResponse.setRequestSuccessful(true);
 
-                goods.setQuantity(newGoodsBalance+"");
+                goods.setQuantity(newGoodsBalance);
                 goodsRepository.save(goods);
 
             }
@@ -147,8 +147,8 @@ public class CartServiceImpl implements CartService {
             if(cart !=null) {
                 Goods goods = goodsRepository.findById(id).orElse(null);
                 if(goods !=null) {
-                    int newQuantity =Integer.parseInt(goods.getQuantity()) + Integer.parseInt(cart.getQuantity());
-                    goods.setQuantity(newQuantity+"");
+                    int newQuantity =goods.getQuantity() + Integer.parseInt(cart.getQuantity());
+                    goods.setQuantity(newQuantity);
                     cartRepository.delete(cart);
                     goodsRepository.save(goods);
                     return fetchAllByUserId("admin");
@@ -241,7 +241,7 @@ public class CartServiceImpl implements CartService {
                     obj.put("qty", cart.getQuantity());
                     obj.put("goods", goods);
                     result.add(obj);
-                    total = total + (Integer.parseInt(cart.getQuantity()) * Integer.parseInt(goods.getUnitPrice()));
+                    total = total + (Integer.parseInt(cart.getQuantity()) * goods.getUnitPrice());
                 }
             }
             Map<String, Object> resp = new HashMap<>();
@@ -292,8 +292,8 @@ public class CartServiceImpl implements CartService {
                 Sales sales = new Sales();
                 sales.setBatchId(batchId);
                 sales.setSalesId(UUID.randomUUID().toString());
-                sales.setTotalPrice((Integer.parseInt(cart.getQuantity()) * Integer.parseInt(goods.getUnitPrice())) + "");
-                sales.setUnitPrice(goods.getUnitPrice());
+                sales.setTotalPrice((Integer.parseInt(cart.getQuantity()) * goods.getUnitPrice()) + "");
+                sales.setUnitPrice(goods.getUnitPrice()+"");
                 sales.setManufacturedDate(goods.getManufacturedDate());
                 sales.setSalesDate(new Date());
                 sales.setItemName(goods.getName());

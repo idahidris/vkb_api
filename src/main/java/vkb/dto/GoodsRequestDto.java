@@ -28,12 +28,12 @@ public class GoodsRequestDto implements Serializable {
     @Size(max = 20, min =1 , message = "quantity should not be less than 1 characters and  greater than 20 characters in length")
     @Pattern(regexp = "^[0-9]+$", message = "invalid quantity pattern")
     @NotBlank(message = "quantity is required")
-    private String quantity;
+    private int quantity;
 
     @Size(max = 20, min = 1, message = "contact Name should not be less than 3 or greater than 100 characters in length")
     @Pattern(regexp = "^[0-9 .]+$", message = "invalid contact Name")
     @NotBlank(message = "contactName is required")
-    private String unitPrice;
+    private double unitPrice;
 
     @Size(max = 20, min = 1, message = "contact Title should not be less than 2 or greater than 5 characters in length")
     @Pattern(regexp =  "^[0-9]+$", message = "invalid contact Title")

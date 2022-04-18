@@ -11,7 +11,8 @@ import vkb.controller.common.AppApiError;
 import vkb.controller.common.AppApiErrors;
 import vkb.controller.common.AppApiResponse;
 import vkb.dto.PageDto;
-import vkb.entity.MonthlyIncome;
+import vkb.entity.Report;
+import vkb.repository.GoodsRepository;
 import vkb.repository.SalesRepository;
 import vkb.service.SalesService;
 
@@ -25,10 +26,12 @@ public class SalesServiceImpl implements SalesService {
 
     private final SalesRepository salesRepository;
     private final ApiResponseUtil apiResponseUtil;
+    private final GoodsRepository goodsRepository;
 
-    public SalesServiceImpl(SalesRepository salesRepository, ApiResponseUtil apiResponseUtil) {
+    public SalesServiceImpl(SalesRepository salesRepository, ApiResponseUtil apiResponseUtil, GoodsRepository goodsRepository) {
         this.salesRepository = salesRepository;
         this.apiResponseUtil = apiResponseUtil;
+        this.goodsRepository = goodsRepository;
 
     }
 
@@ -59,11 +62,32 @@ public class SalesServiceImpl implements SalesService {
 
         log.info("start Date==>"+ startDate +"  , end Date ==>"+ endDate);
 
-        List<MonthlyIncome> monthlyIncome = salesRepository.fetchMonthEarnings(startDate, endDate);
+        List<Report> monthlyIncome = salesRepository.fetchMonthEarnings(startDate, endDate);
         log.info("fetch ===>"+ monthlyIncome.size());
 
 
         reports.put("monthlyIncome", monthlyIncome);
+
+
+        List<Report> reportList = goodsRepository.fetchGoodsValue();
+        log.info("report is null==>"+ reportList.isEmpty());
+
+        Report report =reportList.isEmpty()? new Report() {
+            @Override
+            public String getFactor() {
+                return "";
+            }
+
+            @Override
+            public double getMeasure() {
+                return 0;
+            }
+        } : reportList.get(0);
+        reports.put("goodsValue", report);
+
+
+
+
 
         appApiResponse.setResponseBody(reports);
         AppApiErrors appApiErrors = new AppApiErrors();

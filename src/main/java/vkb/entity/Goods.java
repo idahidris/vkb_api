@@ -26,9 +26,9 @@ public class Goods implements Serializable {
     @Column(name = "name")
     String name;
     @Column(name = "quantity")
-    String quantity;
+    int quantity;
     @Column(name = "unit_price")
-    String unitPrice;
+    double unitPrice;
     @Column(name = "quantity_sold")
     String quantitySold;
     @Column(name = "description")
