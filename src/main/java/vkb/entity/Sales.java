@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Data
@@ -42,9 +43,11 @@ public class Sales implements Serializable {
     @Column(name = "customer_ref")
     String customerRef;
     @Column(name = "sales_date")
-    String salesDate;
+    Date salesDate;
     @Column(name = "item_id")
     String itemId;
+    @Column(name = "batch_id")
+    String batchId;
 
 
 }

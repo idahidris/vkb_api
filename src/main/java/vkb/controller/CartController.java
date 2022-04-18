@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiResponse;
-import vkb.dto.CartDto;
 import vkb.service.CartService;
 
 import javax.validation.Valid;
@@ -47,19 +46,33 @@ public class CartController extends ApiController {
         return response;
     }
 
-//    @DeleteMapping(value = CART)
-//    public AppApiResponse deleteCart(@Valid @RequestBody CartDto cartDto) throws JsonProcessingException {
-//        log.info("************************** start delete cart api **************************");
-//
-//        log.info("REQUEST==>"+objectMapper.writeValueAsString(cartDto));
-//        AppApiResponse appApiResponse
-//                = cartService.remove(cartDto);
-//
-//        AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
-//        log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
-//        log.info("********************* finished executing delete cart api *************************");
-//        return response;
-//    }
+    @DeleteMapping(value = CART+"/{id}")
+    public AppApiResponse deleteCart(@Valid @PathVariable String id) throws JsonProcessingException {
+        log.info("************************** start delete cart api **************************");
+
+        log.info("REQUEST==>"+id);
+        AppApiResponse appApiResponse
+                = cartService.remove(id);
+
+        AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
+        log.info("********************* finished executing delete cart api *************************");
+        return response;
+    }
+
+    @PutMapping(value = CART+"/{user}/{customerRef}")
+    public AppApiResponse cartToSales(@Valid @PathVariable String user, @PathVariable String customerRef) throws JsonProcessingException {
+        log.info("************************** start patch cart api **************************");
+
+        log.info("REQUEST==>"+user+", "+customerRef);
+        AppApiResponse appApiResponse
+                = cartService.cartToSales(user, customerRef);
+
+        AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
+        log.info("********************* finished executing patch cart api *************************");
+        return response;
+    }
 //
 //
 //    @DeleteMapping(value = CART)
@@ -77,19 +90,19 @@ public class CartController extends ApiController {
 //    }
 //
 //
-//    @GetMapping(value = CART)
-//    public AppApiResponse findAll(@Valid @RequestBody String userId) throws JsonProcessingException {
-//        log.info("************************** start fetch all cart api **************************");
-//
-//        log.info("REQUEST==>"+userId);
-//        AppApiResponse appApiResponse
-//                = cartService.fetchAllByUserId(userId);
-//
-//        AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
-//        log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
-//        log.info("********************* finished executing fetch all cart api *************************");
-//        return response;
-//    }
+    @GetMapping(value = CART)
+    public AppApiResponse findAll(@Valid @RequestBody String userId) throws JsonProcessingException {
+        log.info("************************** start fetch all cart api **************************");
+
+        log.info("REQUEST==>"+userId);
+        AppApiResponse appApiResponse
+                = cartService.fetchAllByUserId(userId);
+
+        AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
+        log.info("********************* finished executing fetch all cart api *************************");
+        return response;
+    }
 
 
 

@@ -1,0 +1,5 @@
+
+ALTER TABLE SALES
+ALTER COLUMN sales_date datetime  NOT NULL
+
+GO
