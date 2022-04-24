@@ -3,7 +3,7 @@ package vkb.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.AppApiResponse;
@@ -23,6 +23,7 @@ public class SalesController extends ApiController {
     ObjectMapper objectMapper = new ObjectMapper();
 
 
+
     public SalesController(SalesService salesService) {
 
         this.salesService = salesService;
@@ -34,7 +35,7 @@ public class SalesController extends ApiController {
      * @param pageDto
      * @return
      */
-    @Operation(summary = "Get all sales with pagination")
+
     @GetMapping(value = SALES)
     public AppApiResponse getSales(@Valid @RequestBody PageDto pageDto) throws JsonProcessingException {
 
@@ -49,7 +50,7 @@ public class SalesController extends ApiController {
     }
 
 
-    @Operation(summary = "Get all sales report")
+
     @GetMapping(value = SALES+"/dashboard")
     public AppApiResponse getSalesReport() throws JsonProcessingException {
 

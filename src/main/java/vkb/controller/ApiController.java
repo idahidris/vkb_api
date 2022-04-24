@@ -23,8 +23,11 @@ public abstract class ApiController {
     static final String APIGATEWAYUSERS = "api-gateway-users";
 
     static final String GOODS = "goods";
+    static final String USER = "user";
     static final String SALES = "sales";
+    static final String REPORT = "report";
     static final String CART = "cart";
+    static final String SUBSCRIPTION = "subscription";
 
     
     

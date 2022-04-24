@@ -3,7 +3,6 @@ package vkb.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.ApiResponseUtil;
@@ -40,7 +39,7 @@ public class GoodsController extends ApiController {
      * @param pageDto
      * @return
      */
-    @Operation(summary = "Get all goods with pagination")
+
     @GetMapping(value = GOODS)
     public AppApiResponse getGoods(@Valid @RequestBody PageDto pageDto) throws JsonProcessingException {
 
@@ -53,7 +52,7 @@ public class GoodsController extends ApiController {
 
        return appApiResponse;
     }
-    @Operation(summary = "Get all goods with pagination")
+
     @GetMapping(value = GOODS+"/{goodsId}")
     public AppApiResponse getGoodsById(@Valid @PathVariable String goodsId) throws JsonProcessingException {
 
@@ -90,7 +89,7 @@ public class GoodsController extends ApiController {
      * @param goodsRequestDto
      * @return
      */
-    @Operation(summary = "Post goods")
+
     @PostMapping(value = GOODS)
     public AppApiResponse createGoods(@Valid @RequestBody GoodsRequestDto goodsRequestDto) throws JsonProcessingException {
         log.info("************************** start create goods api **************************");
