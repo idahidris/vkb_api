@@ -27,6 +27,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Stri
     @Query(nativeQuery = true, value = "SELECT s.status as factor, COUNT(s.status) as measure from subscription s WHERE s.subscription_date>=?1 AND s.subscription_date<=?2 GROUP BY s.status ORDER BY s.status ASC ")
     List<Report> fetchStatusReport(Date dateStart, Date dateEnd);
 
+    List<Subscription> findAllByDescriptionAndServiceTitleAndServiceTypeAndPrice(String desc, String serviceTitle, String serviceType, double price );
+
 
 
 

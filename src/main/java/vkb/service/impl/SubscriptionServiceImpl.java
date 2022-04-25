@@ -15,6 +15,7 @@ import vkb.entity.Subscription;
 import vkb.entity.UserAccount;
 import vkb.repository.SubscriptionRepository;
 import vkb.repository.UserAccountRepository;
+import vkb.service.EmailService;
 import vkb.service.SubscriptionService;
 
 import java.util.ArrayList;
@@ -30,11 +31,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final ApiResponseUtil apiResponseUtil;
     private final UserAccountRepository userAccountRepository;
+    private final EmailService emailService;
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, ApiResponseUtil apiResponseUtil, UserAccountRepository userAccountRepository) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, ApiResponseUtil apiResponseUtil, UserAccountRepository userAccountRepository, EmailService emailService) {
         this.subscriptionRepository = subscriptionRepository;
         this.apiResponseUtil = apiResponseUtil;
         this.userAccountRepository = userAccountRepository;
+        this.emailService = emailService;
 
     }
 
@@ -63,6 +66,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         try{
 
+            if(existing(subscription)){
+
+
+                AppApiError appApiError = new AppApiError("01", "Subscription already exists");
+                AppApiErrors appApiErrors = new AppApiErrors();
+                List<AppApiError> listErrors = new ArrayList<>();
+                listErrors.add(appApiError);
+
+                appApiErrors.setApiErrorList(listErrors);
+                appApiErrors.setErrorCount(1);
+                appApiResponse.setApiErrors(appApiErrors);
+
+                return  appApiResponse;
+
+
+            }
 
             appApiResponse.setResponseBody(subscriptionRepository.save(subscription));
             AppApiErrors appApiErrors = new AppApiErrors();
@@ -71,6 +90,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             appApiErrors.setErrorCount(0);
             appApiResponse.setApiErrors(appApiErrors);
             appApiResponse.setRequestSuccessful(true);
+            if(account.getEmail() !=null) {
+                emailService.sendMail(account, "initiated", subscription, "Welcome "+account.getFirstName());
+                log.info("mail sent successfully");
+            }
+            else {
+                log.info("User {} does not have  email for notification ", account.getId());
+            }
             return appApiResponse;
 
 
@@ -115,6 +141,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         }
 
+        boolean isStatusCompleted = !(subscriptionExisting.getStatus().equals(subscription.getStatus())) && subscription.getStatus().equals("Completed");
+
         subscription.setServiceType(subscriptionExisting.getServiceType());
         subscription.setSubscriptionDate(subscriptionExisting.getSubscriptionDate());
         subscription.setCustomerId(subscriptionExisting.getCustomerId());
@@ -129,6 +157,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             appApiErrors.setErrorCount(0);
             appApiResponse.setApiErrors(appApiErrors);
             appApiResponse.setRequestSuccessful(true);
+
+            if(isStatusCompleted){
+                log.info("about  to send completion update");
+                UserAccount account=userAccountRepository.findById(subscription.getCustomerId()).orElse(null);
+
+
+                if(account!=null && account.getEmail() !=null) {
+                    emailService.sendMail(account, "completed", subscription, "Congratulations "+account.getFirstName());
+                    log.info("mail sent successfully");
+                }
+                else {
+                    log.info("subscription {} does not have  email for notification ", subscription.getId());
+                }
+            }
             return appApiResponse;
 
 
@@ -209,6 +251,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             return  appApiResponse;
 
         }
+
+    }
+
+    public boolean existing(Subscription subscription){
+        return !subscriptionRepository.findAllByDescriptionAndServiceTitleAndServiceTypeAndPrice(subscription.getDescription(), subscription.getServiceTitle(),subscription.getServiceType(), subscription.getPrice() ).isEmpty();
 
     }
 
