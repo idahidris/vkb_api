@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="LOGS" value="./logs/jupiter" />
-    <property name="APP_NAME" value="jupiter-terminal-registration-api"/>
+    <property name="LOGS" value="./logs/" />
+    <property name="APP_NAME" value="vkb-api"/>
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
@@ -30,6 +30,8 @@
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
     </appender>
 
@@ -40,7 +42,7 @@
     </root>
 
     <!-- LOG "com.nibssplc*" at TRACE level -->
-    <logger name="com.nibssplc" level="trace" additivity="false">
+    <logger name="com" level="trace" additivity="false">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>

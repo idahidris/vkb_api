@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiResponse;
+import vkb.dto.GoodsRequestDto;
 import vkb.service.CartService;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 
 @RestController
@@ -60,13 +62,13 @@ public class CartController extends ApiController {
         return response;
     }
 
-    @PutMapping(value = CART+"/{user}/{customerRef}")
-    public AppApiResponse cartToSales(@Valid @PathVariable String user, @PathVariable String customerRef) throws JsonProcessingException {
+    @PutMapping(value = CART+"/{user}")
+    public AppApiResponse cartToSales(@Valid @PathVariable String user, @Valid @RequestBody Map.Entry<String, String>  customerRef) throws JsonProcessingException {
         log.info("************************** start patch cart api **************************");
 
         log.info("REQUEST==>"+user+", "+customerRef);
         AppApiResponse appApiResponse
-                = cartService.cartToSales(user, customerRef);
+                = cartService.cartToSales(user, customerRef.getValue().toString());
 
         AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
         log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));

@@ -36,9 +36,6 @@ public class GoodsRequestDto implements Serializable {
     @NotBlank(message = "Contact Title is required")
     private String quantitySold;
 
-    @Size(max = 200, min = 1, message = "description  should not be less than 1 or greater than 200 characters in length")
-    @Pattern(regexp = "^[a-zA-Z0-9 \\-,.@()/]+$", message = "incorrect description pattern")
-    @NotBlank(message = "description is required")
     private String description;
 
     @NotBlank(message = "email is required")
