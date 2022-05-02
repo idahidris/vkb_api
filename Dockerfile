@@ -11,6 +11,7 @@ RUN mvn -B clean package -Dmaven.test.skip=true --file pom.xml
 
 FROM openjdk:8-jdk-alpine
 RUN mkdir -p /apps
+RUN mkdir -p /apps/uploads
 WORKDIR /apps
 COPY --from=build /vkb-api/target/*.jar vkb-api.jar
 EXPOSE 9031
