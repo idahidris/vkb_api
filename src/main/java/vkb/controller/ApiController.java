@@ -28,6 +28,8 @@ public abstract class ApiController {
     static final String REPORT = "report";
     static final String CART = "cart";
     static final String SUBSCRIPTION = "subscription";
+    static final String DOWNLOAD_FILE = "downloadFile";
+
 
     
     

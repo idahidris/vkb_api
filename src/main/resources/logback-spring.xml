@@ -42,7 +42,7 @@
     </root>
 
     <!-- LOG "com.nibssplc*" at TRACE level -->
-    <logger name="com" level="trace" additivity="false">
+    <logger name="com" level="INFO" additivity="false">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>

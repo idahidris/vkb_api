@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiResponse;
-import vkb.dto.GoodsRequestDto;
 import vkb.service.CartService;
 
 import javax.validation.Valid;

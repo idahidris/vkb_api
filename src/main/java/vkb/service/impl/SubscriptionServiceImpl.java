@@ -1,11 +1,18 @@
 package vkb.service.impl;
 
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiError;
 import vkb.controller.common.AppApiErrors;
@@ -18,10 +25,8 @@ import vkb.repository.UserAccountRepository;
 import vkb.service.EmailService;
 import vkb.service.SubscriptionService;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 @Service
@@ -32,18 +37,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final ApiResponseUtil apiResponseUtil;
     private final UserAccountRepository userAccountRepository;
     private final EmailService emailService;
+    private final FileStorageService fileStorageService;
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, ApiResponseUtil apiResponseUtil, UserAccountRepository userAccountRepository, EmailService emailService) {
+    ObjectMapper objectMapper = new ObjectMapper().
+            enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS).configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES,true).
+            enable(SerializationFeature.INDENT_OUTPUT).
+            setDateFormat(new SimpleDateFormat("dd-MM-yyyy")).
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).
+            configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, ApiResponseUtil apiResponseUtil, UserAccountRepository userAccountRepository, EmailService emailService, FileStorageService fileStorageService) {
         this.subscriptionRepository = subscriptionRepository;
         this.apiResponseUtil = apiResponseUtil;
         this.userAccountRepository = userAccountRepository;
         this.emailService = emailService;
+        this.fileStorageService = fileStorageService;
 
     }
 
 
     @Override
-    public AppApiResponse register(Subscription subscription) {
+    public AppApiResponse register(Subscription subscription, MultipartFile file, String path) {
         AppApiResponse appApiResponse = new AppApiResponse();
         UserAccount account  = userAccountRepository.findById(subscription.getCustomerId()).orElse(null);
         if(account==null){
@@ -82,6 +96,47 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 
             }
+
+
+
+            if(file !=null) {
+                String newName =null;
+                log.info(file.getContentType()+"file found!!! saving file now:::" +file.getOriginalFilename());
+                String defaultExt=".docx";
+                log.info("default file extension is {}", defaultExt );
+                String documentLink = subscription.getDocumentLink();
+
+                if(documentLink !=null){
+                    log.info("File name found !!! {}", documentLink);
+                    int lastIndexExt = documentLink.lastIndexOf('.');
+                    if(lastIndexExt>0)
+                        defaultExt=documentLink.substring(lastIndexExt);
+
+                    newName=file.getOriginalFilename()+defaultExt;
+                    log.info("New File name is {}", newName);
+                }
+                String fileName = fileStorageService.storeFile(file, newName);
+                log.info("file was saved with  the name {}", fileName);
+
+                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path(path)
+                        .path(newName==null?fileName:newName)
+                        .toUriString();
+
+                log.info("The file path for download is {}"+ fileDownloadUri);
+
+
+                Map<String, String> linkDetails = new HashMap<>();
+                linkDetails.put("fileName", documentLink);
+                linkDetails.put("path", fileDownloadUri);
+                String newDocumentLink = objectMapper.writeValueAsString(linkDetails);
+                log.info("The document info as saved in database is {}", newDocumentLink);
+                subscription.setDocumentLink(newDocumentLink);
+                log.info("saving file now:::" + fileName+ "::: ended");
+            }
+
+
+
 
             appApiResponse.setResponseBody(subscriptionRepository.save(subscription));
             AppApiErrors appApiErrors = new AppApiErrors();
@@ -123,7 +178,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public AppApiResponse update(Subscription subscription) {
+    public AppApiResponse update(Subscription subscription, MultipartFile file, String path){
         AppApiResponse appApiResponse = new AppApiResponse();
         Subscription subscriptionExisting  = subscriptionRepository.findById(subscription.getId()).orElse(null);
         if(subscriptionExisting==null){
@@ -147,7 +202,86 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setSubscriptionDate(subscriptionExisting.getSubscriptionDate());
         subscription.setCustomerId(subscriptionExisting.getCustomerId());
 
+
         try{
+
+
+            if(file !=null) {
+                String newName =null;
+                log.info(file.getContentType()+"file found!!! saving file now:::" +file.getOriginalFilename());
+                String defaultExt=".docx";
+                log.info("default file extension is {}", defaultExt );
+                String documentLink = subscriptionExisting.getDocumentLink();
+                Map<String, String> prevLink = getPreviousLink(documentLink);
+                String reqDocumentLink = subscription.getDocumentLink();
+
+                if(documentLink !=null) {
+
+                    String paths = prevLink.get("path");
+                    if (paths == null) {
+                        log.info("previous link is invalid or does not exists:::" + documentLink);
+                    } else {
+
+                        int lastIndexPath = paths.lastIndexOf("/");
+                        newName = paths.substring(lastIndexPath + 1);
+                        log.info("Previous File path name is {}", newName);
+                    }
+
+                }
+
+                if(reqDocumentLink !=null && newName==null){
+                    log.info("File name found in request !!! {}", reqDocumentLink);
+                    int lastIndexExt = reqDocumentLink.lastIndexOf('.');
+                    if(lastIndexExt>0)
+                        defaultExt=reqDocumentLink.substring(lastIndexExt);
+                    newName=file.getOriginalFilename()+defaultExt;
+                    log.info("New File name is {}", newName);
+                }
+
+                String fileName = fileStorageService.storeFile(file, newName);
+                log.info("file was saved with  the name {}", fileName);
+
+                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path(path)
+                        .path(newName==null?fileName:newName)
+                        .toUriString();
+
+                log.info("The file path for download is {}"+ fileDownloadUri);
+
+
+                 if(reqDocumentLink !=null){
+                    Map<String, String> linkDetails = new HashMap<>();
+                    linkDetails.put("fileName", reqDocumentLink);
+                    linkDetails.put("path", fileDownloadUri);
+                    String newDocumentLink = objectMapper.writeValueAsString(linkDetails);
+                    log.info("The document info as saved in database is {}", newDocumentLink);
+                    subscription.setDocumentLink(newDocumentLink);
+                    log.info("saving file now:::" + fileName + "::: ended");
+                }
+                else if(prevLink.isEmpty()) {
+                    Map<String, String> linkDetails = new HashMap<>();
+                    linkDetails.put("fileName", fileName);
+                    linkDetails.put("path", fileDownloadUri);
+                    String newDocumentLink = objectMapper.writeValueAsString(linkDetails);
+                    log.info("The document info as saved in database is {}", newDocumentLink);
+                    subscription.setDocumentLink(newDocumentLink);
+                    log.info("saving file now:::" + fileName + "::: ended");
+                }
+
+                else {
+                    String newDocumentLink = objectMapper.writeValueAsString(prevLink);
+                    log.info("The document info as saved in database is {}", newDocumentLink);
+                    subscription.setDocumentLink(newDocumentLink);
+                    log.info("saving file now:::" + fileName + "::: ended");
+
+                }
+
+
+            }
+
+            else {
+                subscription.setDocumentLink(subscriptionExisting.getDocumentLink());
+            }
 
 
             appApiResponse.setResponseBody(subscriptionRepository.save(subscription));
@@ -257,6 +391,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean existing(Subscription subscription){
         return !subscriptionRepository.findAllByDescriptionAndServiceTitleAndServiceTypeAndPrice(subscription.getDescription(), subscription.getServiceTitle(),subscription.getServiceType(), subscription.getPrice() ).isEmpty();
 
+    }
+
+    public Map<String, String> getPreviousLink(String link){
+        Map<String, String> result = new HashMap<>();
+
+        try{
+             TypeReference<HashMap<String, String>> ref= new TypeReference<HashMap<String, String>>(){};
+             result = objectMapper.readValue(link, ref);
+
+        }
+        catch (Exception ex){
+            return result;
+        }
+
+        return result;
     }
 
 
