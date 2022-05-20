@@ -1,14 +1,17 @@
 package vkb.dto;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import vkb.entity.Goods;
+import vkb.util.CommonUtil;
+import vkb.util.DateFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.Date;
 
 
 @Data
@@ -31,31 +34,21 @@ public class GoodsRequestDto implements Serializable {
 
     private double unitPrice;
 
-    @Size(max = 20, min = 1, message = "contact Title should not be less than 2 or greater than 5 characters in length")
-    @Pattern(regexp =  "^[0-9]+$", message = "invalid contact Title")
-    @NotBlank(message = "Contact Title is required")
-    private String quantitySold;
-
     private String description;
 
-    @NotBlank(message = "email is required")
-    @Size(max =40, min =1 , message = "email should not be less than 3 or greater than 40 characters in length")
-    @Pattern(regexp ="^[a-zA-Z0-9 \\-,.@()/]+$", message = "invalid email pattern")
-    private String manufacturedDate;
+    @JsonDeserialize(using = DateFormat.class)
+    private Date manufacturedDate;
 
-    @Size(max = 40, min = 1, message = "merchant Physical Address should not be less than 3 or greater than 40 characters in length")
-    @Pattern(regexp = "^[a-zA-Z0-9 \\-,.@()/]+$", message = "invalid merchant Physical Address")
-    @NotBlank(message = "expiryDate is required")
-    private String expiryDate;
+    @JsonDeserialize(using = DateFormat.class)
+    private Date expiryDate;
 
 
     public Goods toGoods(){
         Goods goods = new Goods();
-        goods.setId(UUID.randomUUID().toString());
+        goods.setId((name.charAt(0)+"0").toUpperCase()+CommonUtil.getID());
         goods.setDescription(description);
         goods.setName(name);
         goods.setQuantity(quantity);
-        goods.setQuantitySold(quantitySold);
         goods.setExpiryDate(expiryDate);
         goods.setManufacturedDate(manufacturedDate);
         goods.setUnitPrice(unitPrice);

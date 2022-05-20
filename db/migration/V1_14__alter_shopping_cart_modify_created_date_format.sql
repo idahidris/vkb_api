@@ -1,0 +1,12 @@
+
+ALTER TABLE SHOPPING_CART
+DROP COLUMN created_date
+
+GO
+
+
+ALTER TABLE SHOPPING_CART
+ADD  created_date datetime  NOT NULL
+GO
+
+

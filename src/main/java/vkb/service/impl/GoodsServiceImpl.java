@@ -84,6 +84,54 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public AppApiResponse findById(String id) {
+        AppApiResponse appApiResponse = new AppApiResponse();
+        try {
+            List<Goods> goods = goodsRepository.findAllById(id);
+
+            if(goods !=null && !goods.isEmpty()) {
+                appApiResponse.setResponseBody(goods.get(0));
+                AppApiErrors appApiErrors = new AppApiErrors();
+                List<AppApiError> listErrors = new ArrayList<>();
+                appApiErrors.setApiErrorList(listErrors);
+                appApiErrors.setErrorCount(0);
+                appApiResponse.setApiErrors(appApiErrors);
+                appApiResponse.setRequestSuccessful(true);
+                return appApiResponse;
+            }
+            else{
+
+                AppApiError appApiError = new AppApiError("01", "invalid goods provided - "+id);
+                AppApiErrors appApiErrors = new AppApiErrors();
+                List<AppApiError> listErrors = new ArrayList<>();
+                listErrors.add(appApiError);
+
+                appApiErrors.setApiErrorList(listErrors);
+                appApiErrors.setErrorCount(1);
+                appApiResponse.setApiErrors(appApiErrors);
+
+                return  appApiResponse;
+
+            }
+        }
+        catch (Exception ex){
+
+            AppApiError appApiError = new AppApiError("01", "please try again, later");
+            AppApiErrors appApiErrors = new AppApiErrors();
+            List<AppApiError> listErrors = new ArrayList<>();
+            listErrors.add(appApiError);
+
+            appApiErrors.setApiErrorList(listErrors);
+            appApiErrors.setErrorCount(1);
+            appApiResponse.setApiErrors(appApiErrors);
+
+            return  appApiResponse;
+
+        }
+
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public AppApiResponse fetchAll(PageDto pageDto) {
         Pageable pageable = PageRequest.of(Integer.parseInt(pageDto.getPageNumber()), Integer.parseInt(pageDto.getPageSize()));
@@ -95,11 +143,63 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public AppApiResponse findById(String id) {
+    public AppApiResponse findByIdLike(String id) {
         Pageable pageable = PageRequest.of(0, 1);
         return apiResponseUtil.entityPagedList(goodsRepository.findAllByIdLike(id, pageable), pageable);
 
     }
+
+    @Override
+    public AppApiResponse update(Goods goods) {
+        AppApiResponse appApiResponse = new AppApiResponse();
+        Goods goodsExisting  = goodsRepository.findById(goods.getId()).orElse(null);
+        if(goodsExisting==null){
+
+            AppApiError appApiError = new AppApiError("01", "invalid  goods id provided");
+            AppApiErrors appApiErrors = new AppApiErrors();
+            List<AppApiError> listErrors = new ArrayList<>();
+            listErrors.add(appApiError);
+
+            appApiErrors.setApiErrorList(listErrors);
+            appApiErrors.setErrorCount(1);
+            appApiResponse.setApiErrors(appApiErrors);
+
+            return  appApiResponse;
+
+        }
+
+        try{
+            appApiResponse.setResponseBody(goodsRepository.save(goods));
+            AppApiErrors appApiErrors = new AppApiErrors();
+            List<AppApiError> listErrors = new ArrayList<>();
+            appApiErrors.setApiErrorList(listErrors);
+            appApiErrors.setErrorCount(0);
+            appApiResponse.setApiErrors(appApiErrors);
+            appApiResponse.setRequestSuccessful(true);
+            return appApiResponse;
+
+
+        }
+        catch (Exception ex){
+            log.error("Failed updating goods: {}",ex.getMessage());
+
+            AppApiError appApiError = new AppApiError("02", "please try again later");
+            AppApiErrors appApiErrors = new AppApiErrors();
+            List<AppApiError> listErrors = new ArrayList<>();
+            listErrors.add(appApiError);
+
+            appApiErrors.setApiErrorList(listErrors);
+            appApiErrors.setErrorCount(1);
+            appApiResponse.setApiErrors(appApiErrors);
+
+            return  appApiResponse;
+
+
+
+        }
+
+    }
+
 
     public boolean exists(Goods goods){
         List<Goods> goodsList = goodsRepository.findAllByNameAndDescription(goods.getName(), goods.getDescription());

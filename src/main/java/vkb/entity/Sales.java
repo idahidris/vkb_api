@@ -1,9 +1,11 @@
 package vkb.entity;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vkb.util.DateFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,12 +38,15 @@ public class Sales implements Serializable {
     String totalPrice;
     @Column(name = "item_description")
     String itemDescription;
+    @JsonDeserialize(using = DateFormat.class)
     @Column(name = "manufactured_date")
-    String manufacturedDate;
+    Date manufacturedDate;
+    @JsonDeserialize(using = DateFormat.class)
     @Column(name = "expiry_date")
-    String expiryDate;
+    Date expiryDate;
     @Column(name = "customer_ref")
     String customerRef;
+    @JsonDeserialize(using = DateFormat.class)
     @Column(name = "sales_date")
     Date salesDate;
     @Column(name = "item_id")

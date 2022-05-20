@@ -1,0 +1,15 @@
+
+ALTER TABLE GOODS
+ALTER COLUMN manufactured_date datetime  NOT NULL
+
+GO
+
+ALTER TABLE GOODS
+ALTER COLUMN expiry_date datetime  NOT NULL
+
+GO
+
+ALTER TABLE GOODS
+DROP COLUMN quantity_sold
+
+GO

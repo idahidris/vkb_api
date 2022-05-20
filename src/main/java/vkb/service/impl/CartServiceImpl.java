@@ -14,6 +14,7 @@ import vkb.repository.CartRepository;
 import vkb.repository.GoodsRepository;
 import vkb.repository.SalesRepository;
 import vkb.service.CartService;
+import vkb.util.CommonUtil;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -280,18 +281,18 @@ public class CartServiceImpl implements CartService {
 
 
         if(customerRef==null || customerRef.isEmpty()|| customerRef.equals("default"))
-            customerRef = UUID.randomUUID().toString();
+            customerRef = "C"+CommonUtil.getID();
 
         List<Cart> carts = cartRepository.findAllByUserId(defaultUserId);
         List<Sales> salesList = new ArrayList<>();
-        String batchId = UUID.randomUUID().toString();
+        String batchId ="B"+CommonUtil.getID();
         for (Cart cart: carts){
 
             Goods goods = goodsRepository.findById(cart.getItemId()).orElse(null);
             if(goods !=null) {
                 Sales sales = new Sales();
                 sales.setBatchId(batchId);
-                sales.setSalesId(UUID.randomUUID().toString());
+                sales.setSalesId(storeName.charAt(0)+"0"+CommonUtil.getID());
                 sales.setTotalPrice((Integer.parseInt(cart.getQuantity()) * goods.getUnitPrice()) + "");
                 sales.setUnitPrice(goods.getUnitPrice()+"");
                 sales.setManufacturedDate(goods.getManufacturedDate());

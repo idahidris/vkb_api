@@ -1,15 +1,18 @@
 package vkb.entity;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vkb.util.DateFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Data
@@ -29,12 +32,15 @@ public class Goods implements Serializable {
     int quantity;
     @Column(name = "unit_price")
     double unitPrice;
-    @Column(name = "quantity_sold")
-    String quantitySold;
+
     @Column(name = "description")
     String description;
+
+    @JsonDeserialize(using = DateFormat.class)
     @Column(name = "manufactured_date")
-    String manufacturedDate;
+    Date manufacturedDate;
+
+    @JsonDeserialize(using = DateFormat.class)
     @Column(name = "expiry_date")
-    String expiryDate;
+    Date expiryDate;
 }

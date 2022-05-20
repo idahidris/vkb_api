@@ -9,6 +9,7 @@ import vkb.controller.common.ApiResponseUtil;
 import vkb.controller.common.AppApiResponse;
 import vkb.dto.GoodsRequestDto;
 import vkb.dto.PageDto;
+import vkb.entity.Goods;
 import vkb.service.GoodsService;
 
 import javax.validation.Valid;
@@ -44,47 +45,46 @@ public class GoodsController extends ApiController {
     public AppApiResponse getGoods(@Valid @RequestBody PageDto pageDto) throws JsonProcessingException {
 
 
-        log.info("************************** start get all terminal api **************************");
+        log.info("************************** start get all goods api **************************");
         log.info("REQUEST==>"+objectMapper.writeValueAsString(pageDto));
         AppApiResponse appApiResponse = goodsService.fetchAll(pageDto);
         log.info("RESPONSE==>"+objectMapper.writeValueAsString(appApiResponse));
-        log.info("********************* finished executing get all terminal api *************************");
+        log.info("********************* finished executing get all goods api *************************");
 
        return appApiResponse;
     }
 
     @GetMapping(value = GOODS+"/{goodsId}")
-    public AppApiResponse getGoodsById(@Valid @PathVariable String goodsId) throws JsonProcessingException {
+    public AppApiResponse getGoodsByIdLike(@Valid @PathVariable String goodsId) throws JsonProcessingException {
 
 
-        log.info("************************** start get all terminal api **************************");
+        log.info("************************** start get goods by id like api **************************");
         log.info("Path Variable==>"+goodsId);
-        AppApiResponse appApiResponse = goodsService.findById(goodsId);
+        AppApiResponse appApiResponse = goodsService.findByIdLike(goodsId);
         log.info("RESPONSE==>"+objectMapper.writeValueAsString(appApiResponse));
-        log.info("********************* finished executing get all terminal api *************************");
+        log.info("********************* finished executing get goods by id like api *************************");
 
         return appApiResponse;
     }
 
-//
-//    /**
-//     * returns a single terminal using terminal ID
-//     *
-//     * @param terminalId
-//     * @return
-//     */
-//    @Operation(summary = "Get a terminal details given the terminal Id")
-//    @GetMapping(value = TERMINAL)
-//    public AppApiResponse getTerminalByTerminalID(@RequestParam String terminalId) {
-//
-//        log.info("************************** start getTerminalByTerminalID api **************************");
-//        AppApiResponse appApiResponse = terminalOperationService.findByTerminalId(terminalId);
-//        log.info("********************* finished executing getTerminalByTerminalID api *************************");
-//        return apiResponseUtil.buildFromServiceLayer(appApiResponse);
-//    }
+
+    @GetMapping(value = GOODS+"/id/{goodsId}")
+    public AppApiResponse getGoodsById(@Valid @PathVariable String goodsId) throws JsonProcessingException {
+
+
+        log.info("************************** start get goods by id api **************************");
+        log.info("Path Variable==>"+goodsId);
+        AppApiResponse appApiResponse = goodsService.findById(goodsId);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(appApiResponse));
+        log.info("********************* finished executing get goods by id api *************************");
+
+        return appApiResponse;
+    }
+
+
 
     /**
-     * api to create bulk terminals
+     * api to create goods
 
      * @param goodsRequestDto
      * @return
@@ -92,7 +92,7 @@ public class GoodsController extends ApiController {
 
     @PostMapping(value = GOODS)
     public AppApiResponse createGoods(@Valid @RequestBody GoodsRequestDto goodsRequestDto) throws JsonProcessingException {
-        log.info("************************** start create goods api **************************");
+        log.info("******************* start register goods api *******************");
 
         log.info("REQUEST==>"+objectMapper.writeValueAsString(goodsRequestDto));
         AppApiResponse appApiResponse
@@ -100,25 +100,24 @@ public class GoodsController extends ApiController {
 
         AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
         log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
-        log.info("********************* finished executing create goods api *************************");
+        log.info("************ finished executing register goods api ************");
         return response;
     }
 
-//    /**
-//     * api to update bulk terminals
-//
-//     * @param terminalFileUploadBulkRequestDto
-//     * @return
-//     */
-//    @Operation(summary = "Update list of terminals")
-//    @PutMapping(value = TERMINALS)
-//    public AppApiResponse updateTerminals(@Valid @RequestBody TerminalFileUploadBulkRequestDto terminalFileUploadBulkRequestDto) {
-//        log.info("************************** start update terminals api **************************");
-//        AppApiResponse appApiResponse
-//                = terminalOperationService.updateBulkTerminal(terminalFileUploadBulkRequestDto);
-//        log.info("********************* finished executing update terminals api *************************");
-//        return apiResponseUtil.buildFromServiceLayer(appApiResponse);
-//    }
+
+    @PutMapping(value = GOODS)
+    public AppApiResponse updateGoods(@Valid @RequestBody Goods goods) throws JsonProcessingException {
+        log.info("************************** start create goods api **************************");
+
+        log.info("REQUEST==>"+objectMapper.writeValueAsString(goods));
+        AppApiResponse appApiResponse
+                = goodsService.update(goods);
+
+        AppApiResponse response = apiResponseUtil.buildFromServiceLayer(appApiResponse);
+        log.info("RESPONSE==>"+objectMapper.writeValueAsString(response));
+        log.info("********************* finished executing create goods api *************************");
+        return response;
+    }
 
 
 

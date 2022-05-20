@@ -51,21 +51,6 @@ public class SalesController extends ApiController {
 
 
 
-    @GetMapping(value = SALES+"/dashboard")
-    public AppApiResponse getSalesReport() throws JsonProcessingException {
-
-
-        log.info("************************** start get all sales report api **************************");
-        AppApiResponse appApiResponse = salesService.reports();
-        log.info("RESPONSE==>"+objectMapper.writeValueAsString(appApiResponse));
-        log.info("********************* finished executing get all sales report api *************************");
-
-        return appApiResponse;
-    }
-
-
-
-
 
 
 }

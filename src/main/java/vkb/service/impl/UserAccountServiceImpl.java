@@ -14,6 +14,7 @@ import vkb.dto.PageDto;
 import vkb.entity.UserAccount;
 import vkb.repository.UserAccountRepository;
 import vkb.service.UserAccountService;
+import vkb.util.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,8 +27,6 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
     private final ApiResponseUtil apiResponseUtil;
-    private static  final long LIMIT = 1000000000;
-    private static long last =0;
 
     public UserAccountServiceImpl(UserAccountRepository userAccountRepository, ApiResponseUtil apiResponseUtil) {
         this.userAccountRepository = userAccountRepository;
@@ -119,7 +118,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 
             try{
-                userAccount.setId(getID()+"");
+                userAccount.setId(CommonUtil.getID()+"");
                 userAccount.setRegisteredDate(new Date());
                 userAccount.setSubscription(userAccount.getId());
                 appApiResponse.setResponseBody(userAccountRepository.save(userAccount));
@@ -236,12 +235,4 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     }
 
-    public static long getID(){
-        long id = System.currentTimeMillis()% LIMIT;
-        if(id<=last){
-            id = (last+1)%LIMIT;
-        }
-         last = id;
-        return id;
-    }
 }

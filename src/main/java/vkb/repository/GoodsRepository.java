@@ -19,6 +19,7 @@ public interface GoodsRepository extends JpaRepository<Goods, String>{
     List<Goods> findAllByNameAndDescription(String name, String description);
 
     Page<Goods> findAllByIdLike(String id, Pageable pageable);
+    List<Goods> findAllById(String id);
 
     @Modifying
     @Transactional(readOnly = true)
