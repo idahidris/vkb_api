@@ -2,7 +2,6 @@ package vkb.service.impl;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +12,6 @@ import vkb.controller.common.AppApiError;
 import vkb.controller.common.AppApiErrors;
 import vkb.controller.common.AppApiResponse;
 import vkb.dto.PageDto;
-import vkb.entity.Goods;
 import vkb.entity.ShippingOrder;
 import vkb.entity.ShippingOrderItems;
 import vkb.entity.ShoppingCart;
@@ -71,13 +69,27 @@ public class ShippingOrderServiceImpl implements ShippingOrderService {
             shippingOrder.setStatus("Initiated");
 
 
-            List<ShippingOrderItems> orderItemsList = (new ObjectMapper().convertValue(orderItems, typeRef));
-            log.info("Object conversion from cart to order successful {}", orderItemsList.size());
 
-            for(ShippingOrderItems items: orderItemsList){
-                items.setShippingOrder(shippingOrder);
-                items.setItemId("N"+CommonUtil.getID());
+            List<ShippingOrderItems> orderItemsList = new ArrayList<> ();
+            for (ShoppingCart cart: orderItems){
+                ShippingOrderItems shippingOrderItems = new ShippingOrderItems();
+                shippingOrderItems.setImageLink(cart.getImageLink());
+                shippingOrderItems.setPageLink(cart.getPageLink());
+                shippingOrderItems.setProductName(cart.getProductName());
+                shippingOrderItems.setCreatedDate(cart.getCreatedDate());
+                shippingOrderItems.setQuantity(cart.getQuantity());
+                shippingOrderItems.setQuantity(cart.getQuantity());
+                shippingOrderItems.setRate(cart.getRate());
+                shippingOrderItems.setUnitPrice(cart.getUnitPrice());
+                shippingOrderItems.setSellerName(cart.getSellerName());
+                shippingOrderItems.setItemId("N"+CommonUtil.getID());
+                shippingOrderItems.setShippingOrder(shippingOrder);
+
+                orderItemsList.add(shippingOrderItems);
+
+
             }
+
 
 
             Map<String, Object> response = new HashMap<>();
@@ -102,7 +114,6 @@ public class ShippingOrderServiceImpl implements ShippingOrderService {
 
         }
         catch (Exception ex){
-            ex.printStackTrace();
             log.error(ex.getMessage());
             AppApiError appApiError = new AppApiError("02", "Please try again, later");
             AppApiErrors appApiErrors = new AppApiErrors();

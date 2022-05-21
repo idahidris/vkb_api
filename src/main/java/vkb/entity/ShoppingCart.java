@@ -1,7 +1,6 @@
 package vkb.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,6 @@ public class ShoppingCart implements Serializable {
 
     @Id
     @Column(name = "id")
-    @JsonIgnore
     String  id;
 
     @Column(name = "created_date")
