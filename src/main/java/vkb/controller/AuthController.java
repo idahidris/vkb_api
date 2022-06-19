@@ -33,6 +33,16 @@ public class AuthController extends ApiController {
 	}
 
 
+	@PostMapping(ApiController.LOGOUT)
+	public AppApiResponse logout(@Valid @RequestBody LoginRequest loginRequest) {
+		log.info("************************** start logout request api **************************");
+		AppApiResponse app = authService.logout(loginRequest);
+		log.info("************************** end logout request api **************************");
+		return app;
+
+	}
+
+
 	@PostMapping(ApiController.SIGN_UP)
 	public AppApiResponse registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		log.info("************************** start sign up request api **************************");
@@ -43,9 +53,9 @@ public class AuthController extends ApiController {
 
 	@PostMapping(ApiController.REFRESH_TOKEN)
 	public AppApiResponse refreshToken(@Valid @RequestBody TokenRefreshRequest refreshRequest) {
-		log.info("************************** start sign up request api **************************");
+		log.info("************************** start refresh token request api **************************");
 		AppApiResponse app = authService.refreshToken(refreshRequest);
-		log.info("************************** end sign up request api **************************");
+		log.info("************************** end refresh token request api **************************");
 		return app;
 	}
 }

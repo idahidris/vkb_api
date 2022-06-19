@@ -95,6 +95,24 @@ private Long refreshTokenDurationMs=1000L * 60 * 60 * 25;
 
     }
 
+    @Override
+    public AppApiResponse logout(LoginRequest loginRequest) {
+        User user =userRepository.findByUsername(loginRequest.getUsername()).orElse(null);
+        if(user !=null) {
+            refreshTokenRepository.deleteById(user.getId());
+        }
+        AppApiResponse appApiResponse = new AppApiResponse();
+        appApiResponse.setResponseBody(new MessageResponse("User - "+user.getUsername()+" registered successfully!"));
+        AppApiErrors appApiErrors = new AppApiErrors();
+        List<AppApiError> listErrors = new ArrayList<>();
+        appApiErrors.setApiErrorList(listErrors);
+        appApiErrors.setErrorCount(0);
+        appApiResponse.setApiErrors(appApiErrors);
+        appApiResponse.setRequestSuccessful(true);
+
+        return appApiResponse;
+    }
+
     public AppApiResponse buildFailureResponse(String msg, String code){
         AppApiResponse appApiResponse = new AppApiResponse();
         AppApiError appApiError = new AppApiError(code, msg);

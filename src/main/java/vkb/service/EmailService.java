@@ -1,6 +1,8 @@
 package vkb.service;
 
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class EmailService {
     private final TemplateEngine templateEngine;
 
     private final JavaMailSender javaMailSender;
+
+    @Value("${spring.mail.username}")
+    private String username;
 
     public EmailService(TemplateEngine templateEngine, JavaMailSender javaMailSender) {
         this.templateEngine = templateEngine;
@@ -43,6 +48,7 @@ public class EmailService {
             helper.setSubject(title);
             helper.setText(process, true);
             helper.setTo(user.getEmail());
+            helper.setFrom(username);
             javaMailSender.send(mimeMessage);
         }
         catch (Exception ex){

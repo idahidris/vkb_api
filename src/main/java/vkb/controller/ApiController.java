@@ -25,6 +25,7 @@ public abstract class ApiController {
     static final String DOWNLOAD_FILE = "downloadFile";
     static final String SIGN_IN = "signin";
     static final String SIGN_UP = "signup";
+    static final String LOGOUT = "logout";
     static final String REFRESH_TOKEN = "refreshtoken";
 
 
